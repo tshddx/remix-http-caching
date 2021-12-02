@@ -1,53 +1,16 @@
-# Welcome to Remix!
+### This should 200 with an etag response header:
 
-- [Remix Docs](https://remix.run/docs)
-
-## Development
-
-From your terminal:
-
-```sh
-npm run dev
+```
+curl -v 'http://localhost:3000/' \
+  -H 'Cache-Control: max-age=0' \
+  -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'
 ```
 
-This starts your app in development mode, rebuilding assets on file changes.
+### This should 304:
 
-## Deployment
-
-First, build your app for production:
-
-```sh
-npm run build
 ```
-
-Then run the app in production mode:
-
-```sh
-npm start
-```
-
-Now you'll need to pick a host to deploy it to.
-
-### DIY
-
-If you're familiar with deploying node applications, the built-in Remix app server is production-ready.
-
-Make sure to deploy the output of `remix build`
-
-- `build/`
-- `public/build/`
-
-### Using a Template
-
-When you ran `npx create-remix@latest` there were a few choices for hosting. You can run that again to create a new project, then copy over your `app/` folder to the new project that's pre-configured for your target server.
-
-```sh
-cd ..
-# create a new project, and pick a pre-configured host
-npx create-remix@latest
-cd my-new-remix-app
-# remove the new project's app (not the old one!)
-rm -rf app
-# copy your app over
-cp -R ../my-old-remix-app/app app
+curl -v 'http://localhost:3000/' \
+  -H 'Cache-Control: max-age=0' \
+  -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9' \
+  -H 'If-None-Match: W/"appVersion:1.0,documentVersion:1.0"'
 ```
