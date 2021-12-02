@@ -1,5 +1,6 @@
 import type { LoaderFunction } from 'remix';
 import { useLoaderData, json, HeadersFunction } from 'remix';
+import checkEtag from '../../lib/checkEtag';
 import sleep from '../../lib/sleep';
 
 export let loader: LoaderFunction = async ({ request }) => {
@@ -9,18 +10,11 @@ export let loader: LoaderFunction = async ({ request }) => {
   // that we can combine to generate a unique etag.
   const etag = `W/"appVersion:1.0,documentVersion:1.0"`;
 
-  // If the browser already has an etag for this request, it will send it in the
-  // If-None-Match header.
-  const ifNoneMatch = request.headers.get('If-None-Match');
-  // If the browser already has this document cached with the same etag, then we
-  // do not need to continue and perform the slow computation. We can return an
-  // empty Response body with the 304 Not Modified response code, and the
-  // browser will display its cached version instantly.
-  if (etag === ifNoneMatch) {
-    return new Response('', {
-      status: 304,
-      headers: { etag },
-    });
+  // This will return a 304 response if the browser's cache matches the current
+  // etag.
+  const notModifiedResponse = checkEtag(etag, request);
+  if (notModifiedResponse) {
+    return notModifiedResponse;
   }
 
   // Pretend we are performing some slow computation.
